@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "standard"
+  ],
+  "env": {
+    "jasmine": true
+  },
+  "rules": {
+    "semi": 0,
+    "space-before-function-paren": 0
+  }
+}

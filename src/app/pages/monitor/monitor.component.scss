@@ -1,0 +1,79 @@
+.filters {
+  margin-bottom: 10px;
+}
+
+.mat-card-content {
+  display: flex;
+  flex: 1;
+}
+
+mat-card {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  max-width: 300px;
+  min-width: 300px;
+  margin: 10px;
+  vertical-align: top;
+
+  .detail {
+    width: 400px;
+
+    mat-card-title {
+      font-weight: bold;
+      font-size: larger;
+    }
+
+    mat-form-field {
+      width: 350px;
+    }
+  }
+}
+
+mat-card-header > .mat-card-avatar > mat-icon {
+  font-size: 40px;
+}
+
+mat-card-title {
+  padding-top: 10px;
+  padding-left: 10px;
+  margin: 10px;
+  font-weight: bold;
+}
+
+mat-card-content {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: solid 2px #d3d3d3;
+}
+
+.running {
+  border: 2px solid #418cd8;
+}
+
+.success {
+  border: 2px solid #1aaa55;
+}
+
+.failed {
+  border: 2px solid #db3b21;
+}
+
+.pending,
+.canceled,
+.skipped,
+.notfound {
+  color: #2e2e2e;
+}
+
+.blame {
+  padding-left: 20px;
+}
+
+.piechart {
+  width: 300px;
+  margin-top: -50px;
+  padding-left: 150px;
+  padding-bottom: 20px;
+}
+

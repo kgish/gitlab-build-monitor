@@ -1,0 +1,96 @@
+<app-progress-bar [loading]="loading"></app-progress-bar>
+
+<app-page-header [description]="description"></app-page-header>
+
+<div [class.hidden]="loading || !projects.length" class="data-table">
+  <div class="filters">
+    <div fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="start center">
+      <p class="whitespace-nowrap">Total projects: {{projects.length}}</p>
+      <div class="buttons-row">
+        <button mat-raised-button color="primary" (click)="clickBack()">Back</button>
+      </div>
+    </div>
+    <div class="whitespace-nowrap" fxHide.xs fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="center center">
+      <mat-radio-group (change)="changeRadio($event)">
+        <mat-radio-button matTooltip="All projects" checked value="all">All</mat-radio-button>
+        <mat-radio-button matTooltip="Projects ready for deployment (tagged without pending commits)" value="ready">Ready</mat-radio-button>
+        <mat-radio-button matTooltip="Projects tagged with pending commits (cannot be deployed)" value="pending">Pending</mat-radio-button>
+        <mat-radio-button matTooltip="Projects which have not been tagged yet (cannot be deployed)" value="untagged">Untagged</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="end center">
+      <mat-form-field>
+        <label for="filter"></label>
+        <input id="filter" matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <table class="table mat-elevation-z4" mat-table [dataSource]="dataSource" matSort>
+
+    <!-- id column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Project id">Id</span></th>
+      <td class="id" mat-cell *matCellDef="let element">{{element.id}}</td>
+    </ng-container>
+
+    <!-- name column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Project name">Name</span></th>
+      <td class="name" mat-cell *matCellDef="let element">{{element.name}}</td>
+    </ng-container>
+
+    <!-- description column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Project description">Description</span></th>
+      <td class="description" mat-cell *matCellDef="let element">{{element.description || 'No description'}}</td>
+    </ng-container>
+
+    <!-- latest column -->
+    <ng-container matColumnDef="latest">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Latest tag name" >Latest</span></th>
+      <td class="latest" mat-cell *matCellDef="let element">
+        <span *ngIf="element.latest !== null">{{element.latest}}</span>
+        <mat-spinner *ngIf="element.latest === null" diameter="16"></mat-spinner>
+      </td>
+    </ng-container>
+
+    <!-- when column -->
+    <ng-container matColumnDef="when">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Latest tag creation date">When</span></th>
+      <td class="when" mat-cell *matCellDef="let element">
+        <span *ngIf="element.when !== null">{{element.when | fromNow }}</span>
+        <mat-spinner *ngIf="element.when === null" diameter="16"></mat-spinner>
+      </td>
+    </ng-container>
+
+    <!-- commits column -->
+    <ng-container matColumnDef="commits">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Number of commits since latest tag was created">Commits</span></th>
+      <td class="commits" mat-cell *matCellDef="let element">
+        <span *ngIf="element.commits !== null"
+              [ngClass]="{ 'nok': element.commits > 0, 'ok': element.commits === 0 }">{{element.commits}}</span>
+        <mat-spinner *ngIf="element.commits === null" diameter="16"></mat-spinner>
+      </td>
+    </ng-container>
+
+    <!-- tags column -->
+    <ng-container matColumnDef="tags">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Total number of tags so far">Tags</span></th>
+      <td class="tags" mat-cell *matCellDef="let element">
+        <span *ngIf="element.tags !== null">{{element.tags}}</span>
+        <mat-spinner *ngIf="element.tags === null" diameter="16"></mat-spinner>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr class="item" mat-row *matRowDef="let row; columns: displayedColumns;" (click)="clickRow(row)"></tr>
+  </table>
+
+  <mat-paginator [class.hidden]="projects.length <= pageSizeOptions[0]" [pageSizeOptions]="pageSizeOptions"
+                 showFirstLastButtons></mat-paginator>
+</div>
+
+<div *ngIf="!loading && !projects.length">
+  <p>Total: 0</p>
+</div>

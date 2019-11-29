@@ -1,0 +1,100 @@
+<app-progress-bar [loading]="loading"></app-progress-bar>
+
+<app-page-header [title]="title" [description]="description"></app-page-header>
+
+<div [class.hidden]="loading || !tags.length" class="data-table">
+  <div class="filters">
+    <div fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="start center">
+      <p class="whitespace-nowrap">Total tags: {{ tags.length }}</p>
+      <div class="buttons-row">
+        <button mat-raised-button color="primary" (click)="clickBack()">Back</button>
+      </div>
+    </div>
+    <div fxFlex fxLayout fxLayoutAlign="center center">
+    </div>
+    <div fxFlex fxLayout fxLayoutAlign="end center">
+      <mat-form-field>
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <table class="table mat-elevation-z4" mat-table [dataSource]="dataSource" matSort>
+
+    <!-- name column-->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+
+    <!-- message column-->
+    <ng-container matColumnDef="message">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Message</th>
+      <td mat-cell *matCellDef="let element">{{ element.message }}</td>
+    </ng-container>
+
+    <!-- releaseTagName column-->
+    <ng-container matColumnDef="releaseTagName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Release name</th>
+      <td mat-cell *matCellDef="let element">{{ element.releaseTagName }}</td>
+    </ng-container>
+
+    <!-- releaseDescription column-->
+    <ng-container matColumnDef="releaseDescription">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Release description</th>
+      <td mat-cell *matCellDef="let element">{{ element.releaseDescription || 'No description' }}</td>
+    </ng-container>
+
+    <!-- commitTitle column-->
+    <ng-container matColumnDef="commitTitle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Commit title</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitTitle }}</td>
+    </ng-container>
+
+    <!-- commitCreated column-->
+    <ng-container matColumnDef="commitCreated">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Commit created</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitCreated | fromNow }}</td>
+    </ng-container>
+
+    <!-- commitMessage column-->
+    <ng-container matColumnDef="commitMessage">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Commit message</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitMessage }}</td>
+    </ng-container>
+
+    <!-- commitAuthorName column-->
+    <ng-container matColumnDef="commitAuthorName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Commit author</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitAuthorName }}</td>
+    </ng-container>
+
+    <!-- commitAuthoredDate column-->
+    <ng-container matColumnDef="commitAuthoredDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Commit authored date</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitAuthoredDate | fromNow }}</td>
+    </ng-container>
+
+    <!-- commitCommitterName column-->
+    <ng-container matColumnDef="commitCommitterName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Commit Committer</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitCommitterName }}</td>
+    </ng-container>
+
+    <!-- commitCommittedDate column-->
+    <ng-container matColumnDef="commitCommittedDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>commitCommittedDate</th>
+      <td mat-cell *matCellDef="let element">{{ element.commitCommittedDate | fromNow }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr class="item" mat-row *matRowDef="let row; columns: displayedColumns;" (click)="clickRow(row)"></tr>
+  </table>
+
+  <mat-paginator [class.hidden]="tags.length <= pageSizeOptions[ 0 ]" [pageSizeOptions]="pageSizeOptions"
+                 showFirstLastButtons></mat-paginator>
+</div>
+
+<div *ngIf="!loading && !tags.length">
+  <p>Total: 0</p>
+</div>

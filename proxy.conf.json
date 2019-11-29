@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": "https://gitlab.com/api/v4",
+    "secure": true,
+    "pathRewrite": {
+      "^/api": ""
+    },
+    "changeOrigin": true
+  }
+}
+

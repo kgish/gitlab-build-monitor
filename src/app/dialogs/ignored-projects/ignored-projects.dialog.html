@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Ignored projects</h2>
+<mat-dialog-content>The following projects are not included because they do not have any pipelines yet.</mat-dialog-content>
+<div mat-dialog-content>
+  <ul>
+    <li *ngFor="let project of data.projects"><a href="{{project.http_url_to_repo}}" target="_blank">{{project.name}}</a></li>
+  </ul>
+</div>
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" [mat-dialog-close]="true">Close</button>
+</mat-dialog-actions>

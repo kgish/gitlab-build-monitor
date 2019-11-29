@@ -1,0 +1,19 @@
+<mat-toolbar color="primary">
+  <div fxFlex fxLayout fxLayoutGap="20px" fxLayoutAlign="start center">
+    <a class="title" routerLink="/">{{title}}</a>
+  </div>
+  <div fxFlex fxLayout fxLayoutGap="20px" fxLayoutAlign="center center">
+    {{caption}}
+  </div>
+  <div fxFlex fxLayout fxLayoutGap="20px" fxLayoutAlign="end center">
+    <div *ngIf="loggedIn">
+      <button mat-button [matMenuTriggerFor]="menu">
+        <mat-icon matTooltip="You are logged in" class="icon">person</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="clickRefresh()"><mat-icon color="primary">refresh</mat-icon>Refresh</button>
+        <button mat-menu-item (click)="clickAbout()"><mat-icon color="primary">info</mat-icon>About</button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

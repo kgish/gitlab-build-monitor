@@ -1,0 +1,9 @@
+<ng-container *ngIf="loading">
+  <mat-progress-bar class="progress-bar" mode="indeterminate"></mat-progress-bar>
+  <p *ngIf="text" class="centered">{{text}}</p>
+</ng-container>
+
+<ng-container *ngIf="!loading && count">
+  <mat-progress-bar class="progress-bar" [value]="(((countStart - count) * 100)/countStart)"></mat-progress-bar>
+  <p *ngIf="text2" class="centered">{{text2}}</p>
+</ng-container>

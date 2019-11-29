@@ -1,0 +1,166 @@
+<app-progress-bar [loading]="loading" [count]="count" [countStart]="countStart"
+                  [text2]="'Getting projects ' + (countStart - count) + '/' + countStart"></app-progress-bar>
+<app-page-header *ngIf="!loading" [description]="description"></app-page-header>
+
+<div [class.hidden]="loading || !projects.length" class="data-table">
+  <div class="filters">
+    <div fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="start end">
+      <mat-spinner *ngIf="pipelinesPending" diameter="16"></mat-spinner>
+      <mat-form-field *ngIf="!pipelinesPending">
+        <mat-label>Status</mat-label>
+        <mat-select (selectionChange)="onStatusChange($event)" [(value)]="statuses" multiple>
+          <mat-option *ngFor="let status of pipelineStatuses" [value]="status">{{status}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div fxHide.xs fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="center start">
+      <div class="piechart">
+        <canvas id="pieChart">{{ pieChart }}</canvas>
+      </div>
+    </div>
+    <div fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="end end">
+      <mat-form-field *ngIf="viewMode === 'list'" fxHide.xs>
+        <label for="filter"></label>
+        <input id="filter" matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+      <mat-button-toggle-group #group="matButtonToggleGroup" [(value)]="viewMode" (change)="toggleViewMode($event)">
+        <mat-button-toggle value="list">
+          <mat-icon>view_list</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="grid">
+          <mat-icon>view_module</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+  <div class="mat-elevation-z4">
+
+    <div [class.hidden]="viewMode === 'grid'">
+      <table [class.hidden]="!filteredProjects.length" class="table" mat-table
+             [dataSource]="dataSource"
+             matSort>
+
+        <!-- id column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Project id">Id</span></th>
+          <td class="id" mat-cell *matCellDef="let element">{{element.id}}</td>
+        </ng-container>
+
+        <!-- name column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Project name">Name</span></th>
+          <td class="name" mat-cell *matCellDef="let element">{{element.name}}</td>
+        </ng-container>
+
+        <!-- status column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span matTooltip="Project status">Status</span></th>
+          <td class="name" mat-cell *matCellDef="let element">
+            <a *ngIf="element.status !== null" href="{{element.web_url}}}" target="_blank">
+              <img alt="{{element.status}}" title="{{element.status}}"
+                   class="status status-{{element.status}}"
+                   src="assets/images/status/{{element.status}}.svg"/>
+            </a>
+            <mat-spinner *ngIf="element.status === null" diameter="16"></mat-spinner>
+          </td>
+        </ng-container>
+
+        <!-- finished column -->
+        <ng-container matColumnDef="finished">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span
+            matTooltip="Project build completed date">Finished</span></th>
+          <td class="name" mat-cell *matCellDef="let element">{{element.finished | fromNow }}
+          </td>
+        </ng-container>
+
+        <!-- blame column -->
+        <ng-container matColumnDef="blame">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span
+            matTooltip="Person who broke the build">Blame</span>
+          </th>
+          <td class="name" mat-cell *matCellDef="let element">{{element.blame}}</td>
+        </ng-container>
+
+        <!-- when column -->
+        <ng-container matColumnDef="when">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span
+            matTooltip="When the build was broken">When</span>
+          </th>
+          <td class="name" mat-cell *matCellDef="let element">{{element.when | fromNow}}</td>
+        </ng-container>
+
+        <!-- count column -->
+        <ng-container matColumnDef="count">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span
+            matTooltip="Number of commits on broken build">Count</span></th>
+          <td class="name" mat-cell *matCellDef="let element">{{element.count}}</td>
+        </ng-container>
+
+        <!-- pipelines column -->
+        <ng-container matColumnDef="pipelines">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header><span
+            matTooltip="Number of project pipelines">Pipelines</span></th>
+          <td class="name" mat-cell *matCellDef="let element">
+            <span *ngIf="element.pipelines !== null">{{element.pipelines}}</span>
+            <mat-spinner *ngIf="element.pipelines === null" diameter="16"></mat-spinner>
+          </td>
+        </ng-container>
+
+        <!-- avatar_url column -->
+        <ng-container matColumnDef="avatar_url">
+          <th mat-header-cell *matHeaderCellDef><span matTooltip="Project avatar">Avatar</span></th>
+          <td class="avatar" mat-cell *matCellDef="let element">
+            <span *ngIf="element.avatar_url"><img alt="avatar" class="avatar" src="{{ element.avatar_url }}"/></span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr class="item" mat-row *matRowDef="let row; columns: displayedColumns;" (click)="clickRow(row)"></tr>
+      </table>
+      <mat-paginator [class.hidden]="projects.length <= pageSizeOptions[0]" [pageSizeOptions]="pageSizeOptions"
+                     showFirstLastButtons></mat-paginator>
+    </div>
+
+    <div [class.hidden]="viewMode === 'list'">
+      <div fxLayout="row wrap" fxLayoutAlign="space-around">
+        <mat-card *ngFor="let project of filteredProjects">
+          <mat-card-header>
+            <div mat-card-avatar>
+            <span *ngIf="project.avatar_url"><img alt="avatar" class="avatar-card"
+                                                  src="{{ project.avatar_url }}"/></span>
+              <mat-icon *ngIf="!project.avatar_url" color="primary">dashboard</mat-icon>
+            </div>
+            <mat-card-title>
+              {{ project.name | capitalize }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ project.description || 'No description.' }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <div *ngIf="project.status" fxFlex fxLayout fxLayoutGap="10px" fxLayoutAlign="start center">
+              <a (click)="$event.stopPropagation(); gotoLink(project.web_url)">
+                <img alt="{{project.status}}" title="{{project.status}}"
+                     class="status status-{{project.status}}"
+                     src="assets/images/status/{{project.status}}.svg"/>
+              </a>
+              <span>{{project.finished | fromNow}}</span>
+              <mat-spinner *ngIf="project.status === null" diameter="16"></mat-spinner>
+            </div>
+            <div *ngIf="blame && project.blame" class="blame" fxFlex fxLayout fxLayoutGap="10px"
+                 fxLayoutAlign="end center">
+              <img alt="blame"
+                   matTooltip="Broken by {{project.blame }} {{project.when | fromNow }} with {{project.count}} pending commit{{project.count === 1 ? '' : 's'}}"
+                   src="assets/images/icons/blame.svg"/>
+            </div>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading && !projects.length">
+  <p>Total: 0</p>
+</div>

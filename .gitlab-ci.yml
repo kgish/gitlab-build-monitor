@@ -1,0 +1,24 @@
+stages:
+  - test
+  - build
+  - deploy
+
+frontend:
+  stage: test
+  script:
+    - make test
+
+build:
+  stage: build
+  only:
+    - master
+  script:
+    - aws ecr get-login --no-include-email | sh
+    - make snapshot
+
+update platform:
+  stage: deploy
+  only:
+    - master
+  script:
+   - make update-platform

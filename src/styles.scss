@@ -1,0 +1,99 @@
+@import '../node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
+
+html,
+body {
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.buttons-row {
+  margin: 5px;
+  white-space: nowrap;
+
+  button {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}
+
+.data-table {
+  .filters {
+    .mat-form-field {
+      font-size: 14px;
+    }
+  }
+
+  .table {
+    width: 100%;
+
+    tr.item {
+      &:hover {
+        background-color: #d3d3d3;
+        cursor: pointer;
+      }
+    }
+
+    th,
+    td {
+      padding: 10px;
+      //white-space: nowrap;
+    }
+
+    td.description {
+      white-space: normal;
+    }
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.avatar {
+  height: 32px;
+}
+
+.avatar-card {
+  height: 50px;
+  clip-path: polygon(50px 0, 50px 0, 50px 50px, 0 50px, 0 0);
+}
+
+img.link {
+  height: 16px;
+}
+
+.status {
+  width: 24px;
+  height: 24px;
+}
+
+.status-running {
+  color: #418cd8;
+}
+
+.status-success {
+  color: #1aaa55;
+}
+
+.status-failed {
+  color: #db3b21;
+}
+
+.status-pending,
+.status-canceled,
+.status-skipped,
+.status-notfound {
+  color: #2e2e2e;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.centered {
+  text-align: center;
+}
